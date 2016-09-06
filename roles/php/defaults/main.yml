@@ -1,0 +1,5 @@
+# file: php/defaults/main.yml
+php_version: 'php-7.0.10'
+php_source_url: 'https://php.net/get/{{php_version}}.tar.xz/from/this/mirror'
+php_signature_url: 'https://php.net/get/{{php_version}}.tar.xz.asc/from/this/mirror'
+php_sha256_checksum: '348476ff7ba8d95a1e28e1059430c10470c5f8110f6d9133d30153dda4cdf56a'
