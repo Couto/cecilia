@@ -1,0 +1,4 @@
+# file: nginx/defaults/main.yml
+
+nginx: "nginx"
+nginx_release_branch: "stable"

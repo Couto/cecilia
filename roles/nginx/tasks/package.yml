@@ -1,0 +1,37 @@
+# file: nextcloud/roles/nginx/tasks/package.yml
+
+- name: nginx | Add the nginx signing key
+  apt_key:
+    url: 'https://nginx.org/keys/nginx_signing.key'
+    id: '0xABF5BD827BD9BF62'
+    state: 'present'
+
+- name: nginx | Add the nginx mainline package repository
+  apt_repository:
+    repo: 'deb http://nginx.org/packages/mainline/debian/ {{ansible_distribution_release}} nginx'
+    state: 'present'
+  when: nginx_release_branch == 'mainline'
+
+- name: nginx | Add the nginx mainline source repository
+  apt_repository:
+    repo: 'deb-src http://nginx.org/packages/mainline/debian/ {{ansible_distribution_release}} nginx'
+    state: 'present'
+  when: nginx_release_branch == 'mainline'
+
+- name: nginx | Add the nginx stable package repository
+  apt_repository:
+    repo: 'deb http://nginx.org/packages/debian/ {{ansible_distribution_release}} nginx'
+    state: 'present'
+  when: nginx_release_branch == 'stable'
+
+- name: nginx | Add the nginx stable source repository
+  apt_repository:
+    repo: 'deb-src http://nginx.org/packages/debian/ {{ansible_distribution_release}} nginx'
+    state: 'present'
+  when: nginx_release_branch == 'stable'
+
+- name: nginx | Make sure nginx is installed
+  apt:
+    pkg: '{{nginx}}'
+    state: 'present'
+    update_cache: yes
