@@ -1,0 +1,42 @@
+
+- name: PHP | Download PHP source code
+  get_url:
+    url: '{{php_source_url}}'
+    dest: '/tmp/{{php_version}}.tar.xz'
+    checksum: 'sha256:{{php_sha256_checksum}}'
+
+- name: PHP | Extract source code
+  unarchive:
+    src: '/tmp/{{php_version}}.tar.xz'
+    dest: '/tmp'
+    creates: '/tmp/{{php_version}}'
+    copy: no
+
+- name: PHP | Write out the version and flags used for the build
+  template:
+    src: php_configure_flags.j2
+    dest: '/tmp/{{php_version}}/.php_configure_flags'
+  register: php_flags
+
+- name: PHP | Configure the PHP source
+  shell: ./configure {% for f in php_configure_flags %} {{f}}{% endfor %}
+  args:
+    chdir: /tmp/{{php_version}}
+  when: php_flags.changed
+
+- name: PHP | Compile PHP source
+  make:
+    chdir: /tmp/{{php_version}}
+  when: php_flags.changed
+
+- name: PHP | Test PHP source
+  make:
+    chdir: /tmp/{{php_version}}
+    target: test
+  when: php_flags.changed
+
+- name: PHP | Install PHP source
+  make:
+    chdir: /tmp/{{php_version}}
+    target: install
+  when: php_flags.changed

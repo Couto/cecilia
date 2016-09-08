@@ -1,0 +1,8 @@
+- name: 'PHP | Ensure necessary dependencies are installed'
+  apt:
+    pkg: '{{ item }}'
+    state: present
+    update_cache: yes
+  with_items:
+    - build-essential
+    - libxml2-dev
