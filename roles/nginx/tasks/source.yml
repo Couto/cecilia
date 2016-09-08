@@ -12,6 +12,7 @@
     - 'libxslt1-dev'
     - 'zlib1g-dev'
     - 'debhelper'
+  become: yes
 
 - name: nginx | Add the nginx stable source repository
   apt_repository:
@@ -33,9 +34,9 @@
 - name: nginx | Build nginx deb package
   shell: dpkg-buildpackage -uc -b
   args:
-    chdir: /tmp/nginx-1.10.1.deb
-    executable: /usr/bin/dpkg-buildpackage
+    chdir: /tmp/nginx-1.10.1/
 
 - name: nginx | Install nginx deb package
   apt:
-    deb: /tmp/nginx-1.10.1.deb
+    deb: /tmp/nginx_1.10.1-1~{{ansible_distribution_release}}_{{ansible_architecture}}.deb
+
