@@ -1,0 +1,41 @@
+- name: 'nginx | Ensure required dependencies'
+  apt:
+    pkg: '{{item}}'
+    state: present
+  with_items:
+    - 'build-essential'
+    - 'libgd2-xpm-dev'
+    - 'libgeoip-dev'
+    - 'libpcre3-dev'
+    - 'libperl-dev'
+    - 'libssl-dev'
+    - 'libxslt1-dev'
+    - 'zlib1g-dev'
+    - 'debhelper'
+
+- name: nginx | Add the nginx stable source repository
+  apt_repository:
+    repo: 'deb-src http://nginx.org/packages/debian/ {{ansible_distribution_release}} nginx'
+    state: 'present'
+  when: nginx_release_branch == 'stable'
+
+- name: nginx | Add the nginx mainline source repository
+  apt_repository:
+    repo: 'deb-src http://nginx.org/packages/mainline/debian/ {{ansible_distribution_release}} nginx'
+    state: 'present'
+  when: nginx_release_branch == 'mainline'
+
+- name: nginx | Download source code
+  shell: apt-get source nginx
+  args:
+    chdir: /tmp
+
+- name: nginx | Build nginx deb package
+  shell: dpkg-buildpackage -uc -b
+  args:
+    chdir: /tmp/nginx-1.10.1.deb
+    executable: /usr/bin/dpkg-buildpackage
+
+- name: nginx | Install nginx deb package
+  apt:
+    deb: /tmp/nginx-1.10.1.deb

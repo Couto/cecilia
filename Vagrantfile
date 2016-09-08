@@ -76,7 +76,7 @@ Vagrant.configure("2") do |config|
   #   apt-get install -y apache2
   # SHELL
   config.vm.provision 'ansible' do |ansible|
-    # ansible.verbose = 'vvvv'
+    ansible.verbose = 'vvvv'
     ansible.limit = 'all'
     ansible.playbook = 'nextcloud.yml'
     ansible.sudo = true

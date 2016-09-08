@@ -1,4 +1,16 @@
 # file: nextcloud/roles/nginx/tasks/main.yml
 
-# I need to compile from source since there's no official arm build :(
+- name: nginx | Add the nginx signing key
+  apt_key:
+    url: 'https://nginx.org/keys/nginx_signing.key'
+    id: '0xABF5BD827BD9BF62'
+    state: 'present'
+
+# This uses the official nginx repository, but it doesn't support arm devices
 - include: package.yml
+  when: nginx_installation_method == 'package'
+
+# I need to compile from source since there's no official arm build :(
+# This is a bad ideia... I lose automatic security updates
+- include: source.yml
+  when: nginx_installation_method == 'source'
