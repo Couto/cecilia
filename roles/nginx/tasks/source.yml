@@ -1,3 +1,7 @@
+- name: 'nginx | Gather information about build architecture'
+  command: 'dpkg-architecture -q DEB_BUILD_ARCH'
+  register: dpkg_architecture
+
 - name: 'nginx | Ensure required dependencies'
   apt:
     pkg: '{{item}}'
@@ -38,5 +42,5 @@
 
 - name: nginx | Install nginx deb package
   apt:
-    deb: /tmp/nginx_1.10.1-1~{{ansible_distribution_release}}_{{ansible_architecture}}.deb
-
+    deb: /tmp/nginx_1.10.1-1~{{ansible_distribution_release}}_{{dpkg_architecture.stdout}}.deb
+  become: yes
