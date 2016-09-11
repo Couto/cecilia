@@ -2,10 +2,17 @@
   command: 'dpkg-architecture -q DEB_BUILD_ARCH'
   register: dpkg_architecture
 
+- name: 'nginx | Ensure store folder exists'
+  file:
+    path: '{{nginx_storage_folder}}'
+    state: 'directory'
+
 - name: 'nginx | Ensure required dependencies'
   apt:
     pkg: '{{item}}'
     state: present
+    update_cache: yes
+    cache_valid_time: 3600
   with_items:
     - 'build-essential'
     - 'libgd2-xpm-dev'
@@ -23,24 +30,21 @@
     repo: 'deb-src http://nginx.org/packages/debian/ {{ansible_distribution_release}} nginx'
     state: 'present'
   when: nginx_release_branch == 'stable'
+  become: yes
 
 - name: nginx | Add the nginx mainline source repository
   apt_repository:
     repo: 'deb-src http://nginx.org/packages/mainline/debian/ {{ansible_distribution_release}} nginx'
     state: 'present'
   when: nginx_release_branch == 'mainline'
+  become: yes
 
-- name: nginx | Download source code
-  shell: apt-get source nginx
+- name: nginx | Download and compile source code
+  shell: apt-get source --compile nginx={{nginx_source_version}}
   args:
-    chdir: /tmp
-
-- name: nginx | Build nginx deb package
-  shell: dpkg-buildpackage -uc -b
-  args:
-    chdir: /tmp/nginx-1.10.1/
+    chdir: '{{nginx_storage_folder}}'
 
 - name: nginx | Install nginx deb package
   apt:
-    deb: /tmp/nginx_1.10.1-1~{{ansible_distribution_release}}_{{dpkg_architecture.stdout}}.deb
+    deb: '{{nginx_storage_folder}}/nginx_{{nginx_source_version}}_{{dpkg_architecture.stdout}}.deb'
   become: yes

@@ -1,7 +1,11 @@
 # file: nginx/defaults/main.yml
 
+# package options
 nginx: 'nginx'
 nginx_release_branch: 'stable'
 nginx_installation_method: 'source'
-nginx_configure_flags:
-  - ''
+
+# source options
+# I need to figure out a way of properly handling versions
+nginx_source_version: '1.10.1-1~{{ansible_distribution_release}}'
+nginx_storage_folder: '{{ansible_env["HOME"]}}'

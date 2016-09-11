@@ -5,6 +5,7 @@
     url: 'https://nginx.org/keys/nginx_signing.key'
     id: '0xABF5BD827BD9BF62'
     state: 'present'
+  become: yes
 
 # This uses the official nginx repository, but it doesn't support arm devices
 - include: package.yml
